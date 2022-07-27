@@ -16,17 +16,25 @@ function generateToken(userId: Types.ObjectId): string {
 export default class AuthController {
     static async register(req: any, res: any) {
         try {
-            const user = await AuthService.register(req.body);
-            const userId = user._id;
-            const token = generateToken(userId);
-            res.status(200).json({
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    avatar: user.avatar
-                },
-                token: token,
-            });
+            const userResult = await AuthService.checkUserMail(req.body.mail);
+            if (!userResult) {
+                const user = await AuthService.register(req.body);
+                const userId = user._id;
+                const token = generateToken(userId);
+                res.status(200).json({
+                    user: {
+                        _id: user._id,
+                        name: user.name,
+                        avatar: user.avatar,
+                        mail: user.mail
+                    },
+                    token: token,
+                });
+            } else {
+                res.status(401).json({
+                    error: "mail déjà utilisé"
+                });
+            }
         } catch (error) {
             res.status(500).json({ error });
         }
@@ -49,6 +57,7 @@ export default class AuthController {
                         _id: user._id,
                         name: user.name,
                         avatar: user.avatar,
+                        mail: user.mail
                     },
                     token: token,
                 });

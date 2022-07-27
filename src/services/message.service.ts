@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { IMessage } from "../models/message/i_message";
 import { ListMessageModel } from "../models/message/list_message_model";
 import { MessageModel } from "../models/message/message_model";
@@ -29,19 +30,107 @@ export class MessageService {
         return data;
     }
 
-    static async getListMessage(firstId: string, secondId: string) {
-        let listMessage = await ListMessageModel.findOne({
-            "$or": [
-                { idConcatenated: firstId + secondId },
-                { idConcatenated: secondId + firstId },
-            ],
-        });
-        if (listMessage) {
-            listMessage = await listMessage!.populate('allMessage');
-            listMessage = await listMessage.populate('allMessage.userSender');
-            listMessage = await listMessage.populate('allMessage.userReceiver');
+    static async getListMessage(firstId: string, secondId: string, lastIndex: string | null) {
+        // let listMessage = await ListMessageModel.findOne({
+        //     "$or": [
+        //         { idConcatenated: firstId + secondId },
+        //         { idConcatenated: secondId + firstId },
+        //     ],
+        // });
+        let limit: number = 5;
+        try {
+            let listMessage;
+            if (lastIndex == null) {
+                listMessage = await ListMessageModel.aggregate([
+                    {
+                        $match: {
+                            "$or": [
+                                { idConcatenated: firstId + secondId },
+                                { idConcatenated: secondId + firstId },
+                            ],
+                        },
+                    },
+                    {
+                        $project: {
+                            messages: {
+                                $slice: ["$allMessage", -limit]
+                            }
+                        }
+                    }
+                ])
+            } else {
+                let last = new mongoose.Types.ObjectId(lastIndex);
+                listMessage = await ListMessageModel.aggregate([
+                    {
+                        $match: {
+                            "$or": [
+                                { idConcatenated: firstId + secondId },
+                                { idConcatenated: secondId + firstId },
+                            ],
+                        },
+                    },
+                    {
+                        $project: {
+                            messages: {
+                                $cond: {
+                                    if: {
+                                        $gte: [
+                                            {
+                                                $subtract: [
+                                                    {
+                                                        $indexOfArray: ["$allMessage", last]
+                                                    },
+                                                    limit
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    then: {
+                                        $slice: [
+                                            "$allMessage",
+                                            {
+                                                $subtract: [
+                                                    {
+                                                        $indexOfArray: ["$allMessage", last]
+                                                    },
+                                                    limit
+                                                ]
+                                            },
+                                            limit
+                                        ]
+                                    },
+                                    else: {
+                                        $slice: [
+                                            "$allMessage",
+                                            0,
+                                            {
+                                                $indexOfArray: ["$allMessage", last]
+                                            }
+                                        ]
+                                    }
+                                },
+                            },
+                        }
+                    }
+                ]);
+            }
+            if (listMessage) {
+                let temp = {
+                    _id: listMessage[0]._id,
+                    idConcatenated: listMessage[0].idConcatenated,
+                    allMessage: listMessage[0].messages.map((e: any) => e.toString())
+                }
+                let data = new ListMessageModel(temp);
+                data = await data!.populate('allMessage');
+                data = await data.populate('allMessage.userSender');
+                data = await data.populate('allMessage.userReceiver');
+                return data;
+            }
+            return null;
+        } catch (error) {
+            console.log("error = ", error)
         }
-        return listMessage;
     }
 
     static async getUserDiscussion(user: string) {
@@ -61,49 +150,33 @@ export class MessageService {
     static async manageDiscussion(message: any, userId: string) {
         let friendId: string = "";
         let data: any;
-        //todo manage discussion with user id
         if (message.userSender._id === userId) {
             friendId = message.userReceiver._id;
         } else {
             friendId = message.userSender._id;
         }
-        let userDiscussion = await UserDiscussionModel.findOne({
-            user: userId
-        });
-        if (userDiscussion) {
-            let index = userDiscussion?.discussion.findIndex((i) => {
-                return i.friend.toString() == friendId.toString();
-            });
-            if (index !== -1) {
-                data = await UserDiscussionModel.updateOne({ user: userId }, {
-                    $pullAll: {
-                        discussion: [{ friend: friendId }],
-                    },
-                });
-                if (!data.discussion) {
-                    await UserDiscussionModel.updateOne({ user: userId }, {
-                        discussion: [{
-                            friend: friendId,
-                            message: message._id
-                        }],
-                    });
-                    data = await UserDiscussionModel.findOne({
-                        user: userId
-                    })
-                } else {
-                    data.discussion.push({
-                        friend: friendId,
-                        message: message._id
-                    });
-                    data = await data.save();
-                }
-            } else {
-                userDiscussion?.discussion.push({
-                    friend: friendId,
-                    message: message._id
-                });
-                data = await userDiscussion?.save();
+        let userDiscussion = await UserDiscussionModel.findOneAndUpdate(
+            {
+                user: userId
+            },
+            {
+                $pull: {
+                    discussion: { friend: friendId }
+                },
+            },
+            {
+                new: true
             }
+        );
+        if (userDiscussion) {
+            // let index = userDiscussion?.discussion.findIndex((i) => {
+            //     return i.friend.toString() == friendId.toString();
+            // });
+            userDiscussion?.discussion.push({
+                friend: friendId,
+                message: message._id
+            });
+            data = await userDiscussion?.save();
         } else {
             let newData = new UserDiscussionModel({
                 user: userId,

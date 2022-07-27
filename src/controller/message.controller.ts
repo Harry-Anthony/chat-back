@@ -17,7 +17,7 @@ export default class MessageController {
 
     static async getDiscussion(req: any, res: any) {
         try {
-            const discussion = await MessageService.getListMessage(req.body.firstId, req.body.secondId)
+            const discussion = await MessageService.getListMessage(req.body.firstId, req.body.secondId,req.body.lastIndex)
             res.status(200).json({
                 discussion
             })

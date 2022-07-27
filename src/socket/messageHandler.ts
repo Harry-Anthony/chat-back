@@ -13,7 +13,7 @@ export const registerMessageHandlers = (io: Server, socket: Socket) => {
         io.emit(`discussion:${message.userReceiver._id}`,discUserReceiver);
     }
     const readMessage = async (payload: any) => {
-        const listMessage = await MessageService.getListMessage(payload.userId, payload.friendId);
+        const listMessage = await MessageService.getListMessage(payload.userId, payload.friendId, payload.lastIndex);
         io.emit(`message:${payload.userId}:${payload.friendId}`, listMessage);
     }
     const readDiscussion = async (payload: any) => {
