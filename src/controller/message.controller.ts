@@ -25,4 +25,15 @@ export default class MessageController {
             res.status(500).json({error});
         }
     }
+
+    static async getChat(req: any, res: any) {
+        try {
+            const messages = await MessageService.getUserDiscussion(req.body.user);
+            res.status(200).json({
+                messages
+            });
+        } catch (error) {
+            res.status(500).json({error});
+        }
+    }
 }

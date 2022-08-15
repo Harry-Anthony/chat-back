@@ -31,13 +31,8 @@ export class MessageService {
     }
 
     static async getListMessage(firstId: string, secondId: string, lastIndex: string | null) {
-        // let listMessage = await ListMessageModel.findOne({
-        //     "$or": [
-        //         { idConcatenated: firstId + secondId },
-        //         { idConcatenated: secondId + firstId },
-        //     ],
-        // });
-        let limit: number = 5;
+        console.log("last index ==>", lastIndex);
+        let limit: number = 15;
         try {
             let listMessage;
             if (lastIndex == null) {
@@ -54,6 +49,9 @@ export class MessageService {
                         $project: {
                             messages: {
                                 $slice: ["$allMessage", -limit]
+                            },
+                            count: {
+                                $size: "$allMessage"
                             }
                         }
                     }
@@ -111,6 +109,9 @@ export class MessageService {
                                     }
                                 },
                             },
+                            count: {
+                                $size: "$allMessage"
+                            }
                         }
                     }
                 ]);
@@ -119,13 +120,15 @@ export class MessageService {
                 let temp = {
                     _id: listMessage[0]._id,
                     idConcatenated: listMessage[0].idConcatenated,
-                    allMessage: listMessage[0].messages.map((e: any) => e.toString())
+                    allMessage: listMessage[0].messages.map((e: any) => e.toString()),
                 }
                 let data = new ListMessageModel(temp);
                 data = await data!.populate('allMessage');
                 data = await data.populate('allMessage.userSender');
                 data = await data.populate('allMessage.userReceiver');
-                return data;
+                let result = JSON.parse(JSON.stringify(data));
+                result.count = listMessage[0].count
+                return result;
             }
             return null;
         } catch (error) {

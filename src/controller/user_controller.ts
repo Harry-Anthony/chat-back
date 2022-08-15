@@ -4,6 +4,7 @@ import { UserService } from "../services/user_service";
 export default class UserController {
     static async searchUser(req: any, res: any) {
         try {
+            console.log(req.body);
             const users = await UserService.searchUser(req.body.keyWord);
             res.status(200).json({
                 users

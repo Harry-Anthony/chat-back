@@ -47,6 +47,7 @@ const io = new Server(httpServer, {
 app.use('/chat-harivola', appRouter);
 
 io.on("connection", (socket) => {
+  console.log("connection ")
   registerMessageHandlers(io, socket);
 });
 

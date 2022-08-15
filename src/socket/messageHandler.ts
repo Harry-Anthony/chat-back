@@ -9,8 +9,10 @@ export const registerMessageHandlers = (io: Server, socket: Socket) => {
         const discUserReceiver = await MessageService.manageDiscussion(message, message.userReceiver._id);
         io.emit(`message:create:${message.userSender._id}:${message.userReceiver._id}`,message);
         io.emit(`message:create:${message.userReceiver._id}:${message.userSender._id}`,message);
-        io.emit(`discussion:${message.userSender._id}`,discUserSender);
-        io.emit(`discussion:${message.userReceiver._id}`,discUserReceiver);
+        io.emit(`discussion:${message.userSender._id}`,message);
+        io.emit(`discussion:${message.userReceiver._id}`,message);
+        // io.emit(`discussion:${message.userSender._id}`,discUserSender);
+        // io.emit(`discussion:${message.userReceiver._id}`,discUserReceiver);
     }
     const readMessage = async (payload: any) => {
         const listMessage = await MessageService.getListMessage(payload.userId, payload.friendId, payload.lastIndex);
