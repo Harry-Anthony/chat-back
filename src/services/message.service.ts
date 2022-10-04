@@ -31,7 +31,6 @@ export class MessageService {
     }
 
     static async getListMessage(firstId: string, secondId: string, lastIndex: string | null) {
-        console.log("last index ==>", lastIndex);
         let limit: number = 15;
         try {
             let listMessage;
@@ -116,7 +115,7 @@ export class MessageService {
                     }
                 ]);
             }
-            if (listMessage) {
+            if (listMessage.length != 0) {
                 let temp = {
                     _id: listMessage[0]._id,
                     idConcatenated: listMessage[0].idConcatenated,
