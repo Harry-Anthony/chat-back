@@ -30,7 +30,15 @@ io.on("connection", (socket) => {
 This implicitly starts a Node.js HTTP server, which can be accessed through io.httpServer.
 */
 // With an HTTP server
-mongoose.connect('mongodb://localhost:27017/chat', (error: any) => {
+// mongoose.connect('mongodb://localhost:27017/chat', (error: any) => {
+//   if (error) {
+//     console.log('error mongo', error);
+//   } else {
+//     console.log('connected to database')
+//   }
+// });
+
+mongoose.connect('mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.net/?retryWrites=true&w=majority', (error: any) => {
   if (error) {
     console.log('error mongo', error);
   } else {

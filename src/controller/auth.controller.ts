@@ -20,7 +20,7 @@ export default class AuthController {
             if (!userResult) {
                 const user = await AuthService.register(req.body);
                 const userId = user._id;
-                const token = generateToken(userId);
+                // const token = generateToken(userId);
                 res.status(200).json({
                     user: {
                         _id: user._id,
@@ -28,7 +28,7 @@ export default class AuthController {
                         avatar: user.avatar,
                         mail: user.mail
                     },
-                    token: token,
+                    // token: token,
                 });
             } else {
                 res.status(401).json({
@@ -51,7 +51,7 @@ export default class AuthController {
                     return res.status(401).json({ error: 'Mot de passe incorrect !' });
                 }
                 const userId = user._id;
-                const token = generateToken(userId);
+                // const token = generateToken(userId);
                 res.status(200).json({
                     user: {
                         _id: user._id,
@@ -59,7 +59,7 @@ export default class AuthController {
                         avatar: user.avatar,
                         mail: user.mail
                     },
-                    token: token,
+                    // token: token,
                 });
             })
         } catch (error) {
