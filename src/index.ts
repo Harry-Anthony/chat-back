@@ -4,12 +4,15 @@ import { Server } from 'socket.io';
 import appRouter from './routes/app.router';
 import mongoose from 'mongoose';
 import { registerMessageHandlers } from './socket/messageHandler';
-
+const { wakeDyno, wakeDynos } = require('heroku-keep-awake');
 const app = express();
 const port: number = 3000;
 
 // requestListener <Function> A listener to be added to the 'request' event.
 const httpServer = http.createServer(app);
+
+
+const DYNO_URLS = ['https://harivola-portfolio.herokuapp.com/', 'https://chat-api-001.herokuapp.com/']
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -38,6 +41,7 @@ This implicitly starts a Node.js HTTP server, which can be accessed through io.h
 //   }
 // });
 
+
 mongoose.connect('mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.net/?retryWrites=true&w=majority', (error: any) => {
   if (error) {
     console.log('error mongo', error);
@@ -59,7 +63,10 @@ io.on("connection", (socket) => {
   registerMessageHandlers(io, socket);
 });
 
-httpServer.listen(port);
+httpServer.listen(port, () => {
+
+  wakeDynos(DYNO_URLS);
+});
 
 
 
