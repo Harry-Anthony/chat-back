@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
   registerMessageHandlers(io, socket);
 });
 
-httpServer.listen(port, () => {
+httpServer.listen(process.env.PORT || port, () => {
 
   wakeDynos(DYNO_URLS);
 });
