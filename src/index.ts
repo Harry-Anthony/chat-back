@@ -52,7 +52,7 @@ mongoose.connect('mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.
 
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: 'https://chat-bol.herokuapp.com/',
     methods: ["GET", "POST"],
   }
 });
