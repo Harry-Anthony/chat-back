@@ -4,9 +4,9 @@ import { Server } from 'socket.io';
 import appRouter from './routes/app.router';
 import mongoose from 'mongoose';
 import { registerMessageHandlers } from './socket/messageHandler';
-const { wakeDyno, wakeDynos } = require('heroku-keep-awake');
+// const { wakeDyno, wakeDynos } = require('heroku-keep-awake');
 const app = express();
-const port: number = 3000;
+const port: number = 3001;
 
 // requestListener <Function> A listener to be added to the 'request' event.
 const httpServer = http.createServer(app);
@@ -41,8 +41,9 @@ This implicitly starts a Node.js HTTP server, which can be accessed through io.h
 //   }
 // });
 
-
-mongoose.connect('mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.net/?retryWrites=true&w=majority', (error: any) => {
+// const remoteDb = "mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.net/?retryWrites=true&w=majority"
+// const remote url = https://chat-bol.herokuapp.com/
+mongoose.connect('mongodb://127.0.0.1:27017/chat-app', (error: any) => {
   if (error) {
     console.log('error mongo', error);
   } else {
@@ -52,8 +53,8 @@ mongoose.connect('mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.
 
 const io = new Server(httpServer, {
   cors: {
-    origin: 'https://chat-bol.herokuapp.com/',
-    methods: ["GET", "POST"],
+    origin: 'http://localhost:3001',
+    // methods: ["GET", "POST"],
   }
 });
 
@@ -66,7 +67,7 @@ io.on("connection", (socket) => {
 
 httpServer.listen(process.env.PORT || port, () => {
 
-  wakeDynos(DYNO_URLS);
+  // wakeDynos(DYNO_URLS);
 });
 
 
