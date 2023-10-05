@@ -53,7 +53,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/chat-app', (error: any) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:3001',
+    origin: '*',
     // methods: ["GET", "POST"],
   }
 });

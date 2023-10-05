@@ -21,10 +21,8 @@ export const registerMessageHandlers = (io: Server, socket: Socket) => {
       `message:create:${message.userReceiver._id}:${message.userSender._id}`,
       message
     );
-    io.emit(`discussion:${message.userSender._id}`, message);
-    io.emit(`discussion:${message.userReceiver._id}`, message);
-    // io.emit(`discussion:${message.userSender._id}`,discUserSender);
-    // io.emit(`discussion:${message.userReceiver._id}`,discUserReceiver);
+    io.emit(`discussion:${message.userSender._id}`, discUserSender);
+    io.emit(`discussion:${message.userReceiver._id}`, discUserReceiver);
   };
   const readMessage = async (payload: any) => {
     const listMessage = await MessageService.getListMessage(
