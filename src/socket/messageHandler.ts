@@ -3,7 +3,6 @@ import { MessageService } from "../services/message.service";
 
 export const registerMessageHandlers = (io: Server, socket: Socket) => {
   const createMessage = async (payload: any) => {
-    console.log('create message')
     const message: any = await MessageService.createMessage(payload.body);
     const discUserSender = await MessageService.manageDiscussion(
       message,
