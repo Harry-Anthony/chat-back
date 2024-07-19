@@ -59,7 +59,9 @@ const io = new Server(httpServer, {
 });
 
 app.use('/chat-harivola', appRouter);
-
+app.get('/keep', (req, res) => {
+  return res.status(200).send("ok")
+})
 io.on("connection", (socket) => {
   console.log("connection ")
   registerMessageHandlers(io, socket);
