@@ -7,11 +7,11 @@ import { registerMessageHandlers } from "./socket/messageHandler";
 // const { wakeDyno, wakeDynos } = require('heroku-keep-awake');
 const app = express();
 const port: number = 3001;
-
+require('dotenv').config()
 // requestListener <Function> A listener to be added to the 'request' event.
 const httpServer = http.createServer(app);
 
-const url = `https://chat-back-2928.onrender.com/keep`; // Replace with your Render URL
+const url = process.env.SERVER_KEEP_URL as string // Replace with your Render URL
 const interval = 40000; // Interval in milliseconds (30 seconds)
 
 function reloadWebsite() {
@@ -70,7 +70,7 @@ This implicitly starts a Node.js HTTP server, which can be accessed through io.h
 // const remoteDb = "mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.net/?retryWrites=true&w=majority"
 // const remote url = https://chat-bol.herokuapp.com/
 mongoose.connect(
-  "mongodb+srv://Harivola:GatlasBol123@cluster0.afarvpm.mongodb.net/",
+  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PWD}@${process.env.MONGO_DB_URL}`,
   (error: any) => {
     if (error) {
       console.log("error mongo", error);
@@ -79,6 +79,24 @@ mongoose.connect(
     }
   }
 );
+
+mongoose.connection.on(
+  "error",
+  console.error.bind(console, "connection error:")
+);
+mongoose.connection.once("open", function () {
+  const { db } = mongoose.connection;
+
+  // Keep the connection alive
+  setInterval(async () => {
+    try {
+      await db.admin().ping();
+      console.log("Pinged MongoDB Atlas");
+    } catch (err) {
+      console.error("Error pinging MongoDB Atlas:", err);
+    }
+  }, 1000 * 60 * 60 * 6); // Ping every 60 seconds
+});
 
 const io = new Server(httpServer, {
   cors: {
