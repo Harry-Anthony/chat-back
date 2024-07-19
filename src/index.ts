@@ -43,7 +43,7 @@ This implicitly starts a Node.js HTTP server, which can be accessed through io.h
 
 // const remoteDb = "mongodb+srv://Harivola:GatlasBol1234@cluster0.a81wt47.mongodb.net/?retryWrites=true&w=majority"
 // const remote url = https://chat-bol.herokuapp.com/
-mongoose.connect('mongodb://127.0.0.1:27017/chat-app', (error: any) => {
+mongoose.connect('mongodb+srv://Harivola:GatlasBol123@cluster0.afarvpm.mongodb.net/', (error: any) => {
   if (error) {
     console.log('error mongo', error);
   } else {
