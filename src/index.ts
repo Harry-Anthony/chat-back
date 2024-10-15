@@ -6,12 +6,15 @@ import mongoose from "mongoose";
 import { registerMessageHandlers } from "./socket/messageHandler";
 // const { wakeDyno, wakeDynos } = require('heroku-keep-awake');
 const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+// This is required to handle urlencoded data
 const port: number = 3001;
-require('dotenv').config()
+require("dotenv").config();
 // requestListener <Function> A listener to be added to the 'request' event.
 const httpServer = http.createServer(app);
 
-const url = process.env.SERVER_KEEP_URL as string // Replace with your Render URL
+const url = process.env.SERVER_KEEP_URL as string; // Replace with your Render URL
 const interval = 40000; // Interval in milliseconds (30 seconds)
 
 function reloadWebsite() {
