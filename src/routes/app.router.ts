@@ -11,5 +11,15 @@ appRouter.use('/auth', authRouter);
 appRouter.use('/message', messageRouter);
 appRouter.use('/user', userRouter);
 appRouter.post('/mail', MailerController.sendMessage)
+appRouter.get('/get-ip', async sendMessage(req: any, res: any) {
+    try {
+      const ip = req.query.ip;
+      const result = await fetch(`http://ip-api.com/json/${ip}`);
+      const data = await result.json();
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  })
 
 export default appRouter;
