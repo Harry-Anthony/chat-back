@@ -6,7 +6,7 @@ import fs from 'fs'
 const filePath = "/etc/secrets/portfolio.json";
 const rawData = fs.readFileSync(filePath, "utf-8");
 const serviceAccount = JSON.parse(rawData);
-
+console.log("serviceAccount =>", serviceAccount)
 // const account = {
 //   "type": "service_account",
 //   "project_id": process.env.PROJECT_ID,
