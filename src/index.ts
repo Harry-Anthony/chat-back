@@ -16,7 +16,6 @@ const httpServer = http.createServer(app);
 
 const url = process.env.SERVER_KEEP_URL as string; // Replace with your Render URL
 const interval = 40000; // Interval in milliseconds (30 seconds)
-
 function reloadWebsite() {
   fetch(url)
     .then((response) => {
